@@ -107,6 +107,7 @@ class CompteController extends Controller
      * )
      */
     public function index(Request $request): JsonResponse
+    
     {
         // Get the authenticated client
         $client = $request->user();
