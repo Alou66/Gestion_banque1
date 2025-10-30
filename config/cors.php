@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], // Keep * for development, but consider specifying origins in production
+    'allowed_origins' => ['https://gestion-banque1.onrender.com'], // Specify production origin for security
 
     'allowed_origins_patterns' => [],
 
