@@ -1,0 +1,351 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Gestion Banque API",
+        "description": "API pour la gestion des comptes bancaires",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "Serveur de développement"
+        }
+    ],
+    "paths": {
+        "/comptes": {
+            "get": {
+                "tags": [
+                    "Comptes"
+                ],
+                "summary": "Lister les comptes bancaires",
+                "description": "Récupère la liste des comptes bancaires avec possibilité de filtrage et pagination",
+                "operationId": "5fdb1d9d6a1e1d81e65a694d33a249c6",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filtrer par type de compte (cheque ou epargne)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "cheque",
+                                "epargne"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "statut",
+                        "in": "query",
+                        "description": "Filtrer par statut du compte",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "actif",
+                                "bloque",
+                                "ferme"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Rechercher par numéro de compte ou nom du titulaire",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "created_at"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Ordre de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des comptes récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Compte"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé - Token manquant ou invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur interne du serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal Server Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Client": {
+                "title": "Client",
+                "description": "Modèle représentant un client bancaire",
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique du client",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "nom": {
+                        "description": "Nom complet du client",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Adresse email du client",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "telephone": {
+                        "description": "Numéro de téléphone du client",
+                        "type": "string"
+                    },
+                    "cni": {
+                        "description": "Numéro de carte d'identité nationale",
+                        "type": "string"
+                    },
+                    "role": {
+                        "description": "Rôle du client (admin ou client)",
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "client"
+                        ]
+                    },
+                    "created_at": {
+                        "description": "Date de création",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Date de dernière modification",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Compte": {
+                "title": "Compte",
+                "description": "Modèle représentant un compte bancaire",
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique du compte",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "numero": {
+                        "description": "Numéro du compte bancaire",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Type de compte",
+                        "type": "string",
+                        "enum": [
+                            "cheque",
+                            "epargne"
+                        ]
+                    },
+                    "solde": {
+                        "description": "Solde du compte",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "statut": {
+                        "description": "Statut du compte",
+                        "type": "string",
+                        "enum": [
+                            "actif",
+                            "bloque",
+                            "ferme"
+                        ]
+                    },
+                    "client_id": {
+                        "description": "Identifiant du client propriétaire",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "motif_blocage": {
+                        "description": "Motif du blocage si applicable",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "supprime": {
+                        "description": "Indique si le compte est supprimé",
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "description": "Date de création",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Date de dernière modification",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "client": {
+                        "$ref": "#/components/schemas/Client"
+                    }
+                },
+                "type": "object"
+            },
+            "Transaction": {
+                "title": "Transaction",
+                "description": "Modèle représentant une transaction bancaire",
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de la transaction",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "compte_id": {
+                        "description": "Identifiant du compte associé",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "montant": {
+                        "description": "Montant de la transaction",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "type": {
+                        "description": "Type de transaction",
+                        "type": "string",
+                        "enum": [
+                            "depot",
+                            "retrait",
+                            "transfert"
+                        ]
+                    },
+                    "created_at": {
+                        "description": "Date de création",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Date de dernière modification",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "compte": {
+                        "$ref": "#/components/schemas/Compte"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Enter your Bearer token in the format: Bearer {token}"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Comptes",
+            "description": "Comptes"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}

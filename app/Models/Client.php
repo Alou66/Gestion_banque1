@@ -9,6 +9,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Contracts\Auth\Authenticatable;
 
+/**
+ * @OA\Schema(
+ *     schema="Client",
+ *     title="Client",
+ *     description="Modèle représentant un client bancaire",
+ *     @OA\Property(property="id", type="string", format="uuid", description="Identifiant unique du client"),
+ *     @OA\Property(property="nom", type="string", description="Nom complet du client"),
+ *     @OA\Property(property="email", type="string", format="email", description="Adresse email du client"),
+ *     @OA\Property(property="telephone", type="string", description="Numéro de téléphone du client"),
+ *     @OA\Property(property="cni", type="string", description="Numéro de carte d'identité nationale"),
+ *     @OA\Property(property="role", type="string", enum={"admin", "client"}, description="Rôle du client (admin ou client)"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", description="Date de création"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", description="Date de dernière modification")
+ * )
+ */
 class Client extends Model implements Authenticatable
 {
     use HasFactory, HasUuids, HasApiTokens;
